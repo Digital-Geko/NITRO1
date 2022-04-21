@@ -1,0 +1,2 @@
+class SilaError(Exception):
+    pass
