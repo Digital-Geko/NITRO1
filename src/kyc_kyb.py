@@ -58,6 +58,7 @@ def request_kyc(
     }
     
     # first KYC attempt needs a different treatment from further attempts
+    # this logic trusts the frontend on keeping track of attempts, however you can persist this counter on your DB if you do not trust the front end logic    
     if kyc_attempts <= 1:
         # Save SSN if it's the first time requesting KYC
         response = silasdk.User.add_registration_data(sila_app, silasdk.RegistrationFields.IDENTITY, payload,
@@ -73,7 +74,8 @@ def request_kyc(
         if not response['success']:
             raise_sila_error(response)
 
-    # Save or update address
+    # update payload -aka parameters- to reflect further information that is need in this workflow
+    # add or update address
     payload = {
         'user_handle': nickname,
         'street_address_1': street_address,
@@ -82,13 +84,15 @@ def request_kyc(
         'postal_code': postal_code,
         'country': country
     }
+
     if kyc_attempts <= 1:
-        # Save address if it's the first time requesting KYC
+        # if this is first attempt, we ADD the address if it's the first time requesting KYC
         response = silasdk.User.add_registration_data(sila_app, silasdk.RegistrationFields.ADDRESS, payload,
                                                       private_key)
         if not response['success']:
             raise_sila_error(response)
     else:
+        # if this is first NOT attempt, we UPDATE the address
         # Add uuid of the previously saved address to the payload
         payload['uuid'] = response_uuid['addresses'][0]['uuid']
         # Update address if it's not the first time requesting KYC
@@ -97,6 +101,7 @@ def request_kyc(
         if not response['success']:
             raise_sila_error(response)
 
+    # update payload -aka parameters- to reflect further information that is need in this workflow
     # Update full name and birthdate
     payload = {
         'user_handle': nickname,
