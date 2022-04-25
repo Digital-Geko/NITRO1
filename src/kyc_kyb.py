@@ -1,3 +1,5 @@
+# this is a sample Backend Module from Digital Geko NITRO Project Ver 1.0.  Please review README.
+
 # We need to import a library to implement SHA256 algorithms, since this is the standard hash for SILA
 import hashlib
 # We need to import a library to .... ???
