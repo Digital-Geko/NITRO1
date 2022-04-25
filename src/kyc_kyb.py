@@ -1,13 +1,24 @@
+# We need to import a library to implement SHA256 algorithms, since this is the standard hash for SILA
 import hashlib
+# We need to import a library to .... ???
 import os
+# We need to import a library to .... ???
 import uuid
+# Of course, we need to import the SILA SDK
 import silasdk
 from src.exceptions import SilaError
 
 # Configure Sila client with values saved in environment variables
+# SILA_TIER holds the value to ???
+# SILA_PRIVATE_KEY holds the value to ???
+# SILA_APP_HANDLE holds the value to ???
 sila_app = silasdk.App(os.getenv('SILA_TIER'), os.getenv('SILA_PRIVATE_KEY'), os.getenv('SILA_APP_HANDLE'))
 
-
+# Since this is the backend, the front end may gather this information and present it to the backend
+# Some of these parameters are basic data, but some require clarification
+# nickname is the ... ???
+# private key is the ... ???
+# kyc_attempts is the ... ???
 def request_kyc(
         ssn: str,
         first_name: str,
@@ -25,20 +36,26 @@ def request_kyc(
 ):
     """Request KYC verification for individuals."""
 
-    # Get user's information from Sila
+    # Get user's information from Sila and the basic parameter to send initially is the user_handle
     payload = {
         'user_handle': nickname
     }
+
+    #Call SILA SDK using a User Entity, and the response is a message that validates the that the user handle exists with its private key
     response_uuid = silasdk.User.get_entity(sila_app, payload, private_key)
     if not response_uuid['success']:
         raise_sila_error(response_uuid)
 
-    # Save or update SSN
+    # if SILA response is a success, we need to save or update SSN
+    # so we will make another SILA SDK call sending the SSN that was sent by the FrontEnd
+        
     payload = {
         'user_handle': nickname,
         'identity_alias': 'SSN',
         'identity_value': ssn
     }
+    
+    # first KYC attempt needs a different treatment from further attempts
     if kyc_attempts <= 1:
         # Save SSN if it's the first time requesting KYC
         response = silasdk.User.add_registration_data(sila_app, silasdk.RegistrationFields.IDENTITY, payload,
