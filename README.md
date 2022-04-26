@@ -25,6 +25,8 @@ Project NITRO is designed to be extensible, and provides multiple options for in
 Contributing
 Contributions are welcomed and encouraged. Please help to make this project even better!   We want to help Fintech Startups get to market faster.
 
+For contact write us at sila@digitalgeko.com 
+
 =============================== License ===============================
 Copyright 2022, Geko Digital S.A.
 
