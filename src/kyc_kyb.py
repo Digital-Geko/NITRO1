@@ -163,7 +163,7 @@ def request_kyb(
         'email': email,
     }
     if kyb_attempts == 1:
-        # Save email if it's the first time requesting KYB
+        # add email if it's the first time requesting KYB
         response = silasdk.User.add_registration_data(sila_app, silasdk.RegistrationFields.EMAIL, payload,
                                                       private_key)
     else:
@@ -182,7 +182,7 @@ def request_kyb(
         'phone': phone
     }
     if kyb_attempts == 1:
-        # Save phone number if it's the first time requesting KYB
+        # Add phone number if it's the first time requesting KYB
         response = silasdk.User.add_registration_data(sila_app, silasdk.RegistrationFields.PHONE, payload, private_key)
     else:
         # Add uuid of the previously saved phone number to the payload
@@ -201,7 +201,7 @@ def request_kyb(
         'identity_value': ein
     }
     if kyb_attempts == 1:
-        # Save EIN if it's the first time requesting KYB
+        # add EIN if it's the first time requesting KYB
         response = silasdk.User.add_registration_data(sila_app, silasdk.RegistrationFields.IDENTITY, payload,
                                                       private_key)
     else:
@@ -225,7 +225,7 @@ def request_kyb(
         'country': country
     }
     if kyb_attempts == 1:
-        # Save address if it's the first time requesting KYB
+        # add address if it's the first time requesting KYB
         response = silasdk.User.add_registration_data(sila_app, silasdk.RegistrationFields.ADDRESS, payload,
                                                       private_key)
     else:
@@ -253,7 +253,7 @@ def upload_document(
 ):
     """Send to Sila complementary documents for KYC/KYB."""
 
-    # Generate a random file name
+    # Generate a random file name in order to avoid duplicate names
     file_name = str(uuid.uuid4())
     # Get document identity related to the type
     identity = get_document_identities(document_type)
