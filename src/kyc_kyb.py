@@ -1,26 +1,26 @@
-# this is a sample Backend Module from Digital Geko NITRO Project Ver 1.0.  Please review README.
+# This is a sample Backend Module from Digital Geko NITRO Project Ver 1.0.  Please review README.
 
 # We need to import a library to implement SHA256 algorithms, since this is the standard hash for SILA
 import hashlib
-# We need to import a library to .... ???
+# We need to import a library to get environment variables
 import os
-# We need to import a library to .... ???
+# We need to import a library to generate UUIDs for file names
 import uuid
 # Of course, we need to import the SILA SDK
 import silasdk
 from src.exceptions import SilaError
 
 # Configure Sila client with values saved in environment variables
-# SILA_TIER holds the value to ???
-# SILA_PRIVATE_KEY holds the value to ???
-# SILA_APP_HANDLE holds the value to ???
+# SILA_TIER holds the value to the environment is used (sandbox or production)
+# SILA_PRIVATE_KEY holds the value to the private key of the Sila's app
+# SILA_APP_HANDLE holds the value to the identifier of the Sila's app
 sila_app = silasdk.App(os.getenv('SILA_TIER'), os.getenv('SILA_PRIVATE_KEY'), os.getenv('SILA_APP_HANDLE'))
 
 # Since this is the backend, the front end may gather this information and present it to the backend
 # Some of these parameters are basic data, but some require clarification
-# nickname is the ... ???
-# private key is the ... ???
-# kyc_attempts is the ... ???
+# nickname is the user's handle to identify them in Sila
+# private_key is the one is used to sign the user's transactions
+# kyc_attempts is the number of times this user has requested KYC counting this one
 def request_kyc(
         ssn: str,
         first_name: str,
@@ -43,13 +43,13 @@ def request_kyc(
         'user_handle': nickname
     }
 
-    #Call SILA SDK using a User Entity, and the response is a message that validates the that the user handle exists with its private key
+    # Call SILA SDK using a User Entity, and the response is a message that validates the user handle exists with its private key
     response_uuid = silasdk.User.get_entity(sila_app, payload, private_key)
     if not response_uuid['success']:
         raise_sila_error(response_uuid)
 
-    # if SILA response is a success, we need to save or update SSN
-    # so we will make another SILA SDK call sending the SSN that was sent by the FrontEnd
+    # If SILA response is a success, we need to save or update SSN
+    # So we will make another SILA SDK call sending the SSN that was sent by the FrontEnd
         
     payload = {
         'user_handle': nickname,
@@ -57,8 +57,8 @@ def request_kyc(
         'identity_value': ssn
     }
     
-    # first KYC attempt needs a different treatment from further attempts
-    # this logic trusts the frontend on keeping track of attempts, however you can persist this counter on your DB if you do not trust the front end logic    
+    # First KYC attempt needs a different treatment from further attempts
+    # This logic trusts the frontend on keeping track of attempts, however you can persist this counter on your DB if you do not trust the front end logic
     if kyc_attempts <= 1:
         # Save SSN if it's the first time requesting KYC
         response = silasdk.User.add_registration_data(sila_app, silasdk.RegistrationFields.IDENTITY, payload,
@@ -66,7 +66,7 @@ def request_kyc(
         if not response['success']:
             raise_sila_error(response)
     else:
-        # Add uuid of the previously saved SSN to the payload
+        # Add UUID of the previously saved SSN to the payload
         payload['uuid'] = response_uuid['identities'][0]['uuid']
         # Update SSN if it's not the first time requesting KYC
         response = silasdk.User.update_registration_data(sila_app, silasdk.RegistrationFields.IDENTITY, payload,
@@ -74,8 +74,8 @@ def request_kyc(
         if not response['success']:
             raise_sila_error(response)
 
-    # update payload -aka parameters- to reflect further information that is need in this workflow
-    # add or update address
+    # Update payload -aka parameters- to reflect further information that is needed in this workflow
+    # Add or update address
     payload = {
         'user_handle': nickname,
         'street_address_1': street_address,
@@ -86,14 +86,14 @@ def request_kyc(
     }
 
     if kyc_attempts <= 1:
-        # if this is first attempt, we ADD the address if it's the first time requesting KYC
+        # If this is first attempt, we ADD the address if it's the first time requesting KYC
         response = silasdk.User.add_registration_data(sila_app, silasdk.RegistrationFields.ADDRESS, payload,
                                                       private_key)
         if not response['success']:
             raise_sila_error(response)
     else:
-        # if this is first NOT attempt, we UPDATE the address
-        # Add uuid of the previously saved address to the payload
+        # If this is first NOT attempt, we UPDATE the address
+        # Add UUID of the previously saved address to the payload
         payload['uuid'] = response_uuid['addresses'][0]['uuid']
         # Update address if it's not the first time requesting KYC
         response = silasdk.User.update_registration_data(sila_app, silasdk.RegistrationFields.ADDRESS, payload,
@@ -101,7 +101,7 @@ def request_kyc(
         if not response['success']:
             raise_sila_error(response)
 
-    # update payload -aka parameters- to reflect further information that is need in this workflow
+    # Update payload -aka parameters- to reflect further information that is need in this workflow
     # Update full name and birthdate
     payload = {
         'user_handle': nickname,
@@ -132,6 +132,8 @@ def request_kyc(
         raise_sila_error(response)
 
 
+# private_key is the one is used to sign the business's transactions
+# kyc_attempts is the number of times this business has requested KYC counting this one
 def request_kyb(
         ein: str,
         email: str,
