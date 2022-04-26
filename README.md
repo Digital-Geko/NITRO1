@@ -4,6 +4,7 @@ NITRO powered by SILA
 =============================== README ===============================
 
 Project NITRO by Digital Geko
+
 Project NITRO is a set of building blocks implemented by Digital Geko (a SILA Money Partner); these blocks include Front End logic (a mobile app) and Back End logic (an API that connects to SILA and some AWS Services).  At Digital Geko, using Project NITRO we have helped our customers boost time-to-market, offering a baseline full stack application that already implements common features delivered by the latest SILA API.
 Project NITRO aims to:
 
@@ -12,6 +13,8 @@ Project NITRO aims to:
 -Facilitate integration with the Silamoney API to existing projects.
 
 -Help meet the requirements requested by Silamoney to enable the use of its platform in a production environment.
+
+
 
 
 Open Source Module: KYC/KYB onboarding
